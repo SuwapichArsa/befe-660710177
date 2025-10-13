@@ -4,11 +4,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install --include=dev
+RUN npm install 
 
 COPY . .
 
 RUN npm run build
+
+RUN chmod -R 755 node_modules/.bin
 
 FROM nginx:alpine
 

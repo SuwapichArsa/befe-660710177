@@ -289,7 +289,7 @@ export const getFeaturedBooks = (limit = 3) => {
 };
 
 // Function to get new books
-export const getNewBooks = (limit = 4) => {
+export const getNewBook = (limit = 4) => {
   return booksData
     .filter(book => book.isNew)
     .slice(0, limit);
