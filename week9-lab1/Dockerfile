@@ -1,21 +1,24 @@
-FROM golang:1.25.1 AS builder
+FROM golang:1.24.5-alpine AS builder
+
+RUN apk add --no-cache git wget
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
-
-RUN go mod download 
+RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates curl
+RUN apk --no-cache add ca-certificates wget
 
 WORKDIR /root/
 
 COPY --from=builder /app/main .
 
-ENTRYPOINT ["./main"]
+EXPOSE 8080
+
+CMD ["./main"]
