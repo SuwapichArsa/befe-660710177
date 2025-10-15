@@ -1,0 +1,186 @@
+basePath: /api/v1
+definitions:
+  main.Book:
+    properties:
+      author:
+        type: string
+      category:
+        description: ฟิลด์ใหม่
+        type: string
+      cover_image:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      discount:
+        type: integer
+      id:
+        type: integer
+      is_new:
+        type: boolean
+      isbn:
+        type: string
+      language:
+        type: string
+      original_price:
+        type: number
+      pages:
+        type: integer
+      price:
+        type: number
+      publisher:
+        type: string
+      rating:
+        type: number
+      reviews_count:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      year:
+        type: integer
+    type: object
+  main.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is an API for a simple bookstore.
+  title: Bookstore API
+  version: "1.1"
+paths:
+  /books:
+    get:
+      description: Get a list of all books, optionally filtered by category.
+      parameters:
+      - description: Filter books by category
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Book'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get all books with optional category filter
+      tags:
+      - Books
+  /books/discounted:
+    get:
+      description: Get a list of books that are on sale.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Book'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get discounted books
+      tags:
+      - Books
+  /books/featured:
+    get:
+      description: Get a list of featured books (e.g., high rating).
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Book'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get featured books
+      tags:
+      - Books
+  /books/new:
+    get:
+      description: Get a list of the newest books.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Book'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get new arrival books
+      tags:
+      - Books
+  /books/search:
+    get:
+      description: Search for books by keyword in title and author.
+      parameters:
+      - description: Search keyword
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Book'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Search for books
+      tags:
+      - Books
+  /categories:
+    get:
+      description: Get a list of unique book categories.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get all unique categories
+      tags:
+      - Books
+swagger: "2.0"

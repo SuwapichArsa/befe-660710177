@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      # เปิด port 8080 ของเครื่องเราให้เชื่อมกับ port 8080 ใน container
+      - "8080:8080"
+    environment:
+      # ดึงค่ามาจากไฟล์ .env
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    # บอกให้ app เริ่มทำงานหลังจาก db พร้อมแล้ว
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      # ดึงค่ามาจากไฟล์ .env
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    # ไม่ต้องเปิด port ของ db สู่ภายนอกก็ได้ เพื่อความปลอดภัย
+    # ให้ app คุยกับ db ผ่าน network ภายในของ Docker เท่านั้น
+    volumes:
+      # เก็บข้อมูล database ไว้ข้างนอก container เพื่อไม่ให้ข้อมูลหาย
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
